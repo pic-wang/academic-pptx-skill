@@ -14,6 +14,7 @@ the three reference decks (see STYLE.md).
 from __future__ import annotations
 
 import copy
+import json
 import re
 from pathlib import Path
 
@@ -59,14 +60,31 @@ SIZE = {
 }
 
 TITLE_Y = 0.5
-TITLE_W = 10.0          # leaves the top-right corner free for the logo
+TITLE_W = 9.85          # leaves the top-right corner free for the logo
 SECTION_Y = 1.5         # first section header
 BODY_Y = 2.0            # body under the first section header
 TAKEHOME_BOTTOM = 6.85  # bottom edge of the take-home box
 CITE_Y = 7.02
-LOGO_W = 2.6
+LOGO_W = 2.745          # institution logo width in the reference decks
+
+ASSET_DIR = Path(__file__).resolve().parent / "assets"
 
 _MARKUP = re.compile(r"(\*\*[^*]+\*\*|\*[^*]+\*)")
+
+
+def house_assets():
+    """Local, untracked institution images listed in assets/assets.json.
+
+    Returns {name: {"path", "x", "y", "w", ...}}; empty when the folder is
+    absent. Typical names: polyu_logo (content-slide logo), title_corner,
+    title_slogan, lab_logo (title-slide decorations).
+    """
+    meta = ASSET_DIR / "assets.json"
+    if not meta.exists():
+        return {}
+    items = json.loads(meta.read_text(encoding="utf-8"))
+    return {k: dict(v, path=str(ASSET_DIR / v["file"])) for k, v in items.items()
+            if (ASSET_DIR / v["file"]).exists()}
 
 
 # ---------------------------------------------------------------- deck setup
@@ -131,6 +149,14 @@ def add_runs(paragraph, text, size, bold=False, color=TEXT):
 
 def _plain(text):
     return _MARKUP.sub(lambda m: m.group(0).strip("*"), text)
+
+
+def _text_width(text, size):
+    """Upper estimate (in) of the rendered width of `text` in Cambria at `size` pt.
+
+    0.0069 in per pt-character covers bold runs; regular text is ~8% narrower.
+    """
+    return len(_plain(text)) * size * 0.0069
 
 
 def _textbox(slide, x, y, w, h, wrap=True, anchor=MSO_ANCHOR.TOP):
@@ -227,12 +253,12 @@ def add_takehome_box(slide, text, y=None, w=None, x=None, size=None):
     `y` is given. Put the key phrase in **red bold** markup.
     """
     size = size or SIZE["takehome"]
-    plain = _plain(text)
+    tw = _text_width(text, size)
     if w is None:
-        w = min(CONTENT_W, 0.40 + len(plain) * size * 0.0062)
+        w = min(CONTENT_W, 0.45 + tw)
     if x is None:
         x = (SLIDE_W - w) / 2
-    lines = max(1, round(len(plain) * size * 0.0062 / (w - 0.25) + 0.49))
+    lines = max(1, -(-tw // (w - 0.3)))
     h = 0.14 + lines * size * 1.2 / 72
     if y is None:
         y = TAKEHOME_BOTTOM - h
@@ -289,8 +315,8 @@ def add_page_number(slide, n):
 def add_logo(slide, path, w=LOGO_W):
     """Institution logo in the top-right corner (optional)."""
     if path and Path(path).exists():
-        return slide.shapes.add_picture(str(path), Inches(SLIDE_W - w - 0.08),
-                                        Inches(0.12), width=Inches(w))
+        return slide.shapes.add_picture(str(path), Inches(SLIDE_W - w - 0.15),
+                                        Inches(0.10), width=Inches(w))
     return None
 
 
@@ -414,6 +440,12 @@ def add_table(slide, header, rows, x, y, w, col_widths=None, highlight=(),
     if col_widths:
         for i, cw in enumerate(col_widths):
             tbl.columns[i].width = Inches(cw)
+    widths = col_widths or [w / n_cols] * n_cols
+    for r, values in enumerate([header] + list(rows)):
+        for c, val in enumerate(values):
+            if _text_width(str(val), size) + 0.16 > widths[c]:
+                import warnings
+                warnings.warn(f"table cell may wrap (row {r}, col {c}, {widths[c]:.2f} in): {val!r}")
     for r in range(n_rows):
         tbl.rows[r].height = Inches(row_h)
     hl = set(highlight)
@@ -443,9 +475,15 @@ def add_table(slide, header, rows, x, y, w, col_widths=None, highlight=(),
 
 # ---------------------------------------------------------------- whole slides
 def title_slide(prs, title, authors, presenter=None, affiliation=None,
-                venue=None, logo=None):
-    """Centred title (key phrase via markup), authors, presenter block."""
+                venue=None, logo=None, decorations=()):
+    """Centred title (key phrase via markup), authors, presenter block.
+
+    `decorations`: images placed behind the text, each a dict with path, x,
+    y, w (e.g. the title-page corner, slogan and lab logo from house_assets()).
+    """
     s = blank_slide(prs)
+    for d in decorations:
+        s.shapes.add_picture(str(d["path"]), Inches(d["x"]), Inches(d["y"]), width=Inches(d["w"]))
     add_logo(s, logo)
     tb, tf = _textbox(s, 1.3, 2.6, 10.73, 1.6, anchor=MSO_ANCHOR.MIDDLE)
     p = tf.paragraphs[0]

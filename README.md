@@ -59,7 +59,7 @@ python examples/build_demo.py examples/demo.pptx [--template template.pptx] [--l
 python render.py examples/demo.pptx examples/demo_render
 ```
 
-Institution templates and logos are not stored in this repository. Pass them with `--template` / `--logo`, or `new_presentation(template=...)` / `logo=...` in code.
+Institution templates and logos are not stored in this repository. Pass them with `--template` / `--logo`, or `new_presentation(template=...)` / `logo=...` in code. Alternatively put the images in a local `assets/` folder (ignored by git) with an `assets.json` listing file, x, y, w for each; `house_assets()` loads them and `title_slide(decorations=...)` places them.
 
 ## License
 

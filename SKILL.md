@@ -61,6 +61,8 @@ All visual rules live in [STYLE.md](STYLE.md). Summary:
 
 Use the helpers in `pptx_style.py`: `new_presentation`, `title_slide`, `agenda_slide`, `content_slide`, `add_page_title`, `add_section_header`, `add_body`, `add_takehome_box`, `add_table`, `add_figure`, `add_caption`, `add_citation`, `add_concept_boxes`, `check_takehome`.
 
+Institution images: if the untracked folder `assets/` exists (with `assets.json`), call `ps.house_assets()`. Pass its `polyu_logo` path as `logo=` on content slides, and `title_corner`, `title_slogan`, `lab_logo` as `decorations=` to `title_slide`. This reproduces the title page and logo of the reference decks.
+
 Python plotting code must start with the user's matplotlib styling block (see the user's CLAUDE.md; `examples/build_demo.py` shows it).
 
 ---
