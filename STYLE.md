@@ -78,7 +78,9 @@ Inside body text, mark the two to five words that carry the point in red (`*text
 - OOXML order: in `<a:tcPr>`, `lnL`, `lnR`, `lnT`, `lnB` must come **before** `<a:solidFill>`. Otherwise PowerPoint ignores the borders and draws the default grid. `_apply_three_line_borders` writes them in this order.
 
 ### Figures and captions
+- **Figures fill the content area** between the title and the take-home box. A small figure inside a mostly empty slide is not acceptable; enlarge the figure or crop its whitespace, and cut words instead.
 - Figure on the left, interpretation (section header + 2–3 bullets) on the right, when a slide has one exhibit plus commentary.
+- Geometry and partition figures: show representative cases at the same scale so relative sizes are visible, in neatly aligned columns of equal height.
 - Caption under the figure: `Fig. N.` bold + one regular sentence. Must fit on one line; shorten it if it wraps.
 - Short descriptive labels under a row of images (e.g. "Pedestrian level comfort", "(Lyu et al., 2025)") are 18 pt, centred under each image (`add_caption` with `label=""`).
 - Annotate the focal point inside the figure in red (`C00000`): arrow, circle, or a label such as `RL2E: 0.12`.
@@ -105,10 +107,16 @@ Full reference (authors, title, venue, year, DOI) in 10.5 pt muted text at the b
 - Dark backgrounds on any slide.
 - A content slide without a take-home box.
 - Fonts other than Cambria in slide text.
+- Internal codes on slides (run names such as E1 / L120 / B0, batch names, case IDs such as F1b). Describe the item instead: "baseline, width 128 × 6", "Case E (CFD)", "K = 8 window".
+- Writing to the user's own edited copy of a deck (e.g. a `*_update.pptx`). Write only the original file; if the user edited the original since your last write, merge instead of regenerating.
 
 ## 6. Visual QA (required before reporting done)
 
-Render the deck (`python render.py deck.pptx out_dir`: PowerPoint COM on Windows, LibreOffice + `pdftoppm` elsewhere) and inspect every slide image for:
+Render the deck (`python render.py deck.pptx out_dir`: PowerPoint COM on Windows, LibreOffice + `pdftoppm` elsewhere) and inspect every slide image.
+
+**Never close the user's PowerPoint.** PowerPoint is single-instance: COM attaches to the user's window and `Application.Quit()` closes all of their presentations, including unsaved ones. `render.py` refuses to run while PowerPoint is open, closes only its own file, and quits only an instance it started. If PowerPoint is open, ask the user before rendering, or check the deck through python-pptx (text, positions, sizes) instead.
+
+Inspect every slide image for:
 
 - red dashed take-home box present on each content slide (`check_takehome()` also checks this);
 - black three-line tables, no internal grid, zebra stripes;

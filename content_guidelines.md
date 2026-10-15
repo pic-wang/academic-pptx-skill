@@ -113,6 +113,9 @@ Omit articles and filler phrases where meaning is preserved.
 ### Body font: 20 pt minimum
 This is a floor, not a target; side panels next to a figure may use 18 pt. If text must be smaller to fit, remove content until it fits.
 
+### No internal codes
+Run names, batch names, and case IDs from the lab notebook (e.g. "E1", "L120", "B0", "F1b") mean nothing to the audience. Replace each with a description: "baseline, width 128 × 6", "mirror-averaged model", "Case E (CFD)".
+
 ### Use red and bold sparingly
 Mark the two to five words that carry each point in red (`*text*`) or red bold (`**text**`). Inline labels ("Objective:", "Input:", "Output:") are red bold. Italics for statistical notation and symbols. Do not colour whole sentences red outside the take-home box.
 
@@ -138,6 +141,9 @@ Introduce sources verbally before the citation appears: "Smith and colleagues fo
 
 ### References slide
 The last slide before the appendix must be a References slide listing complete citations for every source cited in the deck. Format consistently with your field's conventions.
+
+### Verify every number
+Before delivery, check every number on every slide against the result file or log it comes from. Results computed against different references (e.g. two CFD settings, two evaluation boxes) are not placed side by side. Where a figure shows one seed and a table shows a multi-seed mean, say which is which.
 
 ---
 
