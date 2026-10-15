@@ -8,8 +8,8 @@ Inline markup accepted by every text helper:
     *text*    -> red (C00000) regular run
     plain     -> 1A1A1A regular run
 
-Canvas: 10 x 5.625 in (16:9). The reference decks were authored on
-13.33 x 7.5 in; all sizes below are the reference sizes x 0.75.
+Canvas: 13.333 x 7.5 in (16:9). Font sizes and positions were measured from
+the three reference decks (see STYLE.md).
 """
 from __future__ import annotations
 
@@ -35,25 +35,36 @@ MUTED = RGBColor(0x6B, 0x6B, 0x6B)
 AGENDA_INACTIVE = RGBColor(0xBF, 0xBF, 0xBF)
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 
-SLIDE_W, SLIDE_H = 10.0, 5.625
+SLIDE_W, SLIDE_H = 13.333, 7.5
 MARGIN = 0.5
-CONTENT_W = SLIDE_W - 2 * MARGIN
+CONTENT_W = SLIDE_W - 2 * MARGIN      # 12.33 in
+INDENT = 0.31                         # bullet indent (285750 EMU in the reference decks)
 
 SIZE = {
-    "title": 22,        # page title
-    "section": 16,      # red-bullet section header
-    "body": 15,         # body text (= 20 pt on 13.33 in canvas)
-    "body_small": 13,   # dense body / table cells
-    "takehome": 15,
-    "caption": 12,
-    "cite": 8,
-    "page": 10,
-    "deck_title": 22,
-    "agenda": 18,
+    "title": 28,        # page title
+    "section": 20,      # red-bullet section header
+    "body": 20,         # body text
+    "body_small": 18,   # side panels next to a figure, dense text
+    "label": 14,        # labels inside diagrams
+    "takehome": 20,
+    "table": 18,
+    "caption": 18,      # Fig. N. / Tab. N. captions and labels under images
+    "cite": 10.5,
+    "page": 14,
+    "deck_title": 28,
+    "authors": 20,
+    "agenda": 24,
+    "box_head": 18,     # concept box header
+    "box_item": 16,     # concept box bullets
 }
 
-TAKEHOME_Y = 4.72
-CITE_Y = 5.30
+TITLE_Y = 0.5
+TITLE_W = 10.0          # leaves the top-right corner free for the logo
+SECTION_Y = 1.5         # first section header
+BODY_Y = 2.0            # body under the first section header
+TAKEHOME_BOTTOM = 6.85  # bottom edge of the take-home box
+CITE_Y = 7.02
+LOGO_W = 2.6
 
 _MARKUP = re.compile(r"(\*\*[^*]+\*\*|\*[^*]+\*)")
 
@@ -118,17 +129,21 @@ def add_runs(paragraph, text, size, bold=False, color=TEXT):
             _style_run(r, size, bold=bold, color=color)
 
 
+def _plain(text):
+    return _MARKUP.sub(lambda m: m.group(0).strip("*"), text)
+
+
 def _textbox(slide, x, y, w, h, wrap=True, anchor=MSO_ANCHOR.TOP):
     tb = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
     tf = tb.text_frame
     tf.word_wrap = wrap
     tf.vertical_anchor = anchor
-    tf.margin_left = tf.margin_right = Inches(0.05)
-    tf.margin_top = tf.margin_bottom = Inches(0.03)
+    tf.margin_left = tf.margin_right = Inches(0.08)
+    tf.margin_top = tf.margin_bottom = Inches(0.04)
     return tb, tf
 
 
-def _set_bullet(paragraph, char="•", font="Arial", marL=0.25, color=None):
+def _set_bullet(paragraph, char="•", font="Arial", marL=INDENT, color=None):
     pPr = paragraph._p.get_or_add_pPr()
     pPr.set("marL", str(Inches(marL)))
     pPr.set("indent", str(-Inches(marL)))
@@ -154,38 +169,39 @@ def _line_spacing(paragraph, pct):
 
 
 # ---------------------------------------------------------------- page parts
-def add_page_title(slide, text, x=MARGIN, y=0.38, w=CONTENT_W - 1.4):
-    """22 pt Cambria bold black, top-left. No accent line underneath.
+def add_page_title(slide, text, x=MARGIN, y=TITLE_Y, w=TITLE_W):
+    """28 pt Cambria bold black, top-left. No accent line underneath.
 
-    Must fit on one line: about 52 characters at the default width.
+    Must fit on one line: about 54 characters at the default width.
     """
-    plain = _MARKUP.sub(lambda m: m.group(0).strip("*"), text)
+    plain = _plain(text)
     if len(plain) * SIZE["title"] * 0.0066 > w:
         import warnings
         warnings.warn(f"page title may wrap ({len(plain)} chars): {plain!r}")
-    tb, tf = _textbox(slide, x, y, w, 0.5, anchor=MSO_ANCHOR.TOP)
+    tb, tf = _textbox(slide, x, y, w, 0.6, anchor=MSO_ANCHOR.TOP)
     p = tf.paragraphs[0]
     p.alignment = PP_ALIGN.LEFT
     add_runs(p, text, SIZE["title"], bold=True, color=BLACK)
     return tb
 
 
-def add_section_header(slide, text, x=MARGIN, y=1.05, w=CONTENT_W):
-    """Red bullet + 16 pt Cambria bold red text."""
-    tb, tf = _textbox(slide, x, y, w, 0.35)
+def add_section_header(slide, text, x=MARGIN, y=SECTION_Y, w=CONTENT_W):
+    """Red bullet + 20 pt Cambria bold red text."""
+    tb, tf = _textbox(slide, x, y, w, 0.45)
     p = tf.paragraphs[0]
     p.alignment = PP_ALIGN.LEFT
-    _set_bullet(p, marL=0.22, color=RED)
+    _set_bullet(p, color=RED)
     add_runs(p, text, SIZE["section"], bold=True, color=RED)
     return tb
 
 
-def add_body(slide, items, x=MARGIN + 0.22, y=1.45, w=CONTENT_W - 0.22, h=2.5,
-             size=None, bullets=True, space_after=6):
+def add_body(slide, items, x=MARGIN + INDENT, y=BODY_Y, w=CONTENT_W - INDENT, h=3.4,
+             size=None, bullets=True, space_after=8):
     """Body paragraphs, left-aligned.
 
     `items`: list of str, or (level, str). Level 0 = black bullet, level 1 =
     en-dash sub-bullet. Pass bullets=False for plain lead-in sentences.
+    At the default x, bullets sit under the section-header text.
     """
     size = size or SIZE["body"]
     tb, tf = _textbox(slide, x, y, w, h)
@@ -198,27 +214,30 @@ def add_body(slide, items, x=MARGIN + 0.22, y=1.45, w=CONTENT_W - 0.22, h=2.5,
         p.space_after = Pt(space_after)
         if bullets:
             _set_bullet(p, char="•" if level == 0 else "–",
-                        marL=0.22 + 0.25 * level, color=TEXT)
-        add_runs(p, text, size - (1 if level else 0))
+                        marL=INDENT + 0.3 * level, color=TEXT)
+        add_runs(p, text, size - (2 if level else 0))
     return tb
 
 
-def add_takehome_box(slide, text, y=TAKEHOME_Y, w=None, x=None, size=None):
+def add_takehome_box(slide, text, y=None, w=None, x=None, size=None):
     """Red dashed-border box at the bottom. Mandatory on every content slide.
 
     Width defaults to fit the text (single line) up to CONTENT_W; the box is
-    centred horizontally. Put the key phrase in **red bold** markup.
+    centred horizontally and its bottom edge sits at TAKEHOME_BOTTOM unless
+    `y` is given. Put the key phrase in **red bold** markup.
     """
     size = size or SIZE["takehome"]
-    plain = _MARKUP.sub(lambda m: m.group(0).strip("*"), text)
+    plain = _plain(text)
     if w is None:
-        w = min(CONTENT_W, 0.30 + len(plain) * size * 0.0062)
+        w = min(CONTENT_W, 0.40 + len(plain) * size * 0.0062)
     if x is None:
         x = (SLIDE_W - w) / 2
-    lines = max(1, round(len(plain) * size * 0.0062 / (w - 0.2) + 0.49))
-    h = 0.12 + lines * size * 1.25 / 72
+    lines = max(1, round(len(plain) * size * 0.0062 / (w - 0.25) + 0.49))
+    h = 0.14 + lines * size * 1.2 / 72
+    if y is None:
+        y = TAKEHOME_BOTTOM - h
     tb, tf = _textbox(slide, x, y, w, h, anchor=MSO_ANCHOR.MIDDLE)
-    tf.margin_left = tf.margin_right = Inches(0.1)
+    tf.margin_left = tf.margin_right = Inches(0.12)
     p = tf.paragraphs[0]
     p.alignment = PP_ALIGN.CENTER
     add_runs(p, text, size)
@@ -234,21 +253,25 @@ def add_takehome_box(slide, text, y=TAKEHOME_Y, w=None, x=None, size=None):
 
 
 def add_caption(slide, label, text, x, y, w, align=PP_ALIGN.CENTER):
-    """12 pt caption: bold 'Fig. N.' / 'Tab. N.' prefix, single line."""
-    tb, tf = _textbox(slide, x, y, w, 0.28)
+    """18 pt caption: bold 'Fig. N.' / 'Tab. N.' prefix, single line.
+
+    Pass label="" for a plain label under an image (e.g. "Air pollution").
+    """
+    tb, tf = _textbox(slide, x, y, w, 0.4)
     tf.word_wrap = False
     p = tf.paragraphs[0]
     p.alignment = align
-    r = p.add_run()
-    r.text = label.rstrip() + " "
-    _style_run(r, SIZE["caption"], bold=True)
+    if label:
+        r = p.add_run()
+        r.text = label.rstrip() + " "
+        _style_run(r, SIZE["caption"], bold=True)
     add_runs(p, text, SIZE["caption"])
     return tb
 
 
-def add_citation(slide, text, x=0.1, y=CITE_Y, w=8.6):
+def add_citation(slide, text, x=0.1, y=CITE_Y, w=12.3):
     """Full reference in small muted text at the bottom-left."""
-    tb, tf = _textbox(slide, x, y, w, 0.25)
+    tb, tf = _textbox(slide, x, y, w, 0.3)
     p = tf.paragraphs[0]
     p.alignment = PP_ALIGN.LEFT
     add_runs(p, text, SIZE["cite"], color=MUTED)
@@ -256,18 +279,18 @@ def add_citation(slide, text, x=0.1, y=CITE_Y, w=8.6):
 
 
 def add_page_number(slide, n):
-    tb, tf = _textbox(slide, SLIDE_W - 0.6, SLIDE_H - 0.32, 0.5, 0.25)
+    tb, tf = _textbox(slide, SLIDE_W - 0.8, SLIDE_H - 0.42, 0.7, 0.35)
     p = tf.paragraphs[0]
     p.alignment = PP_ALIGN.RIGHT
     add_runs(p, str(n), SIZE["page"])
     return tb
 
 
-def add_logo(slide, path, w=1.45):
+def add_logo(slide, path, w=LOGO_W):
     """Institution logo in the top-right corner (optional)."""
     if path and Path(path).exists():
-        return slide.shapes.add_picture(str(path), Inches(SLIDE_W - w - 0.1),
-                                        Inches(0.08), width=Inches(w))
+        return slide.shapes.add_picture(str(path), Inches(SLIDE_W - w - 0.08),
+                                        Inches(0.12), width=Inches(w))
     return None
 
 
@@ -276,13 +299,13 @@ def add_figure(slide, path, x, y, w=None, h=None, caption=None):
 
     With both `w` and `h`, the image is scaled to fit inside that box with its
     aspect ratio kept, and centred horizontally in it. The caption height
-    (0.3 in) is reserved inside the box.
+    (0.4 in) is reserved inside the box.
     """
     if w and h:
         from PIL import Image
         with Image.open(path) as im:
             ar = im.width / im.height
-        box_h = h - (0.3 if caption else 0)
+        box_h = h - (0.4 if caption else 0)
         fw, fh = (w, w / ar) if w / ar <= box_h else (box_h * ar, box_h)
         x, w, h = x + (w - fw) / 2, fw, fh
     pic = slide.shapes.add_picture(str(path), Inches(x), Inches(y),
@@ -295,7 +318,7 @@ def add_figure(slide, path, x, y, w=None, h=None, caption=None):
     return pic
 
 
-def add_concept_boxes(slide, boxes, y=3.05, h=1.45, x=MARGIN, w=CONTENT_W, gap=0.25):
+def add_concept_boxes(slide, boxes, y=4.4, h=1.9, x=MARGIN, w=CONTENT_W, gap=0.35):
     """Row of rounded red-bordered boxes: [(header, [bullet, ...]), ...]."""
     n = len(boxes)
     bw = (w - gap * (n - 1)) / n
@@ -312,16 +335,18 @@ def add_concept_boxes(slide, boxes, y=3.05, h=1.45, x=MARGIN, w=CONTENT_W, gap=0
         tf = sh.text_frame
         tf.word_wrap = True
         tf.vertical_anchor = MSO_ANCHOR.TOP
-        tf.margin_left = tf.margin_right = Inches(0.12)
+        tf.margin_left = tf.margin_right = Inches(0.15)
+        tf.margin_top = Inches(0.1)
         p = tf.paragraphs[0]
         p.alignment = PP_ALIGN.CENTER
-        p.space_after = Pt(4)
-        add_runs(p, head, SIZE["body_small"], bold=True)
+        p.space_after = Pt(6)
+        add_runs(p, head, SIZE["box_head"], bold=True)
         for it in items:
             q = tf.add_paragraph()
             q.alignment = PP_ALIGN.LEFT
-            _set_bullet(q, marL=0.18, color=TEXT)
-            add_runs(q, it, 11)
+            q.space_after = Pt(4)
+            _set_bullet(q, marL=0.25, color=TEXT)
+            add_runs(q, it, SIZE["box_item"])
         shapes.append(sh)
     return shapes
 
@@ -368,13 +393,14 @@ def _apply_three_line_borders(table, rule_w=12700):
 
 
 def add_table(slide, header, rows, x, y, w, col_widths=None, highlight=(),
-              size=None, row_h=0.32):
+              size=None, row_h=0.45):
     """Three-line academic table with zebra stripes.
 
     `highlight`: iterable of (row_idx, col_idx) data-cell positions (0-based,
     excluding the header) rendered red bold. Values may also use markup.
+    Compact side tables: size=14, row_h=0.34.
     """
-    size = size or SIZE["body_small"]
+    size = size or SIZE["table"]
     n_rows, n_cols = len(rows) + 1, len(header)
     gf = slide.shapes.add_table(n_rows, n_cols, Inches(x), Inches(y),
                                 Inches(w), Inches(row_h * n_rows))
@@ -395,7 +421,7 @@ def add_table(slide, header, rows, x, y, w, col_widths=None, highlight=(),
         values = header if r == 0 else rows[r - 1]
         for c in range(n_cols):
             cell = tbl.cell(r, c)
-            cell.margin_left = cell.margin_right = Inches(0.06)
+            cell.margin_left = cell.margin_right = Inches(0.08)
             cell.margin_top = cell.margin_bottom = Inches(0.02)
             cell.vertical_anchor = MSO_ANCHOR.MIDDLE
             tf = cell.text_frame
@@ -420,39 +446,39 @@ def title_slide(prs, title, authors, presenter=None, affiliation=None,
                 venue=None, logo=None):
     """Centred title (key phrase via markup), authors, presenter block."""
     s = blank_slide(prs)
-    add_logo(s, logo, w=1.8)
-    tb, tf = _textbox(s, 1.0, 1.55, 8.0, 1.1, anchor=MSO_ANCHOR.MIDDLE)
+    add_logo(s, logo)
+    tb, tf = _textbox(s, 1.3, 2.6, 10.73, 1.6, anchor=MSO_ANCHOR.MIDDLE)
     p = tf.paragraphs[0]
     p.alignment = PP_ALIGN.CENTER
     add_runs(p, title, SIZE["deck_title"], bold=True, color=BLACK)
-    tb, tf = _textbox(s, 1.0, 2.95, 8.0, 0.35)
+    tb, tf = _textbox(s, 1.3, 4.6, 10.73, 0.45)
     p = tf.paragraphs[0]
     p.alignment = PP_ALIGN.CENTER
-    add_runs(p, authors, SIZE["body"])
+    add_runs(p, authors, SIZE["authors"])
     if venue:
-        tb, tf = _textbox(s, 1.0, 3.32, 8.0, 0.3)
+        tb, tf = _textbox(s, 1.3, 5.1, 10.73, 0.4)
         p = tf.paragraphs[0]
         p.alignment = PP_ALIGN.CENTER
         add_runs(p, venue, SIZE["caption"], color=MUTED)
     lines = [l for l in (presenter and f"Presenter: {presenter}", affiliation) if l]
     for i, line in enumerate(lines):
-        yy = 4.55 + i * 0.36
-        bar = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(5.55), Inches(yy + 0.05),
-                                 Inches(0.05), Inches(0.24))
+        yy = 6.3 + i * 0.44
+        bar = s.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(8.0), Inches(yy + 0.1),
+                                 Inches(0.06), Inches(0.24))
         bar.fill.solid()
         bar.fill.fore_color.rgb = RED
         bar.line.fill.background()
         bar.shadow.inherit = False
-        tb, tf = _textbox(s, 5.68, yy, 4.2, 0.34)
+        tb, tf = _textbox(s, 8.12, yy, 5.1, 0.44, anchor=MSO_ANCHOR.MIDDLE)
         p = tf.paragraphs[0]
         p.alignment = PP_ALIGN.LEFT
         if line.startswith("Presenter: "):
             r = p.add_run()
             r.text = "Presenter: "
-            _style_run(r, SIZE["body"], bold=True, color=BLACK)
-            add_runs(p, line[len("Presenter: "):], SIZE["body"])
+            _style_run(r, SIZE["authors"], bold=True, color=BLACK)
+            add_runs(p, line[len("Presenter: "):], SIZE["authors"])
         else:
-            add_runs(p, line, SIZE["body"], bold=True, color=BLACK)
+            add_runs(p, line, SIZE["authors"], bold=True, color=BLACK)
     return s
 
 
@@ -461,16 +487,16 @@ def agenda_slide(prs, sections, current, page=None, logo=None, title="Content"):
     s = blank_slide(prs)
     add_logo(s, logo)
     add_page_title(s, title)
-    tb, tf = _textbox(s, 2.0, 1.25, 7.0, 3.2, anchor=MSO_ANCHOR.MIDDLE)
+    tb, tf = _textbox(s, 1.9, 1.7, 9.7, 4.2, anchor=MSO_ANCHOR.MIDDLE)
     for i, sec in enumerate(sections):
         p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
         p.alignment = PP_ALIGN.LEFT
         _line_spacing(p, 200)
         active = (i == current) or (sec == current)
         if active:
-            _set_bullet(p, "•", "Arial", marL=0.3, color=BLACK)
+            _set_bullet(p, "•", "Arial", marL=0.4, color=BLACK)
         else:
-            _set_bullet(p, "o", "Courier New", marL=0.3, color=BLACK)
+            _set_bullet(p, "o", "Courier New", marL=0.4, color=BLACK)
         add_runs(p, sec, SIZE["agenda"], bold=True,
                  color=BLACK if active else AGENDA_INACTIVE)
     if page is not None:

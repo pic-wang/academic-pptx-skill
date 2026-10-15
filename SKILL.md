@@ -49,14 +49,14 @@ Run the ghost deck test on the outline: read only the page titles in sequence; t
 
 All visual rules live in [STYLE.md](STYLE.md). Summary:
 
-- 10 × 5.625 in, white background, **Cambria** everywhere.
+- 13.333 × 7.5 in (the size of the reference decks), white background, **Cambria** everywhere.
 - Palette: `1A1A1A` text, `000000` titles and table rules, `C00000` red accent, `F2F2F2` zebra gray, `6B6B6B` muted. No blue, green, or orange.
-- Page title 22 pt bold black top-left, one line, no underline.
-- Section header: red `•` + 16 pt bold red text.
-- Body 15 pt, key phrases in red / red bold.
+- Page title 28 pt bold black top-left, one line, no underline.
+- Section header: red `•` + 20 pt bold red text.
+- Body 20 pt (18 pt in side panels), key phrases in red / red bold.
 - **Every content slide ends with a red dashed take-home box** stating its conclusion, key phrase in red bold.
 - Tables: three black rules, no grid, zebra rows, key cells red bold, no `tableStyleId`.
-- Captions 12 pt, `Fig. N.` / `Tab. N.` bold, single line.
+- Captions 18 pt, `Fig. N.` / `Tab. N.` bold, single line. Citations 10.5 pt.
 - An agenda ("Content") slide with the current section highlighted opens each major section.
 
 Use the helpers in `pptx_style.py`: `new_presentation`, `title_slide`, `agenda_slide`, `content_slide`, `add_page_title`, `add_section_header`, `add_body`, `add_takehome_box`, `add_table`, `add_figure`, `add_caption`, `add_citation`, `add_concept_boxes`, `check_takehome`.
@@ -83,7 +83,7 @@ Academic QA checklist:
 □ References slide exists
 □ Conclusions slide is the last main slide, with contact info
 □ Agenda slide before each major section (decks > 10 slides)
-□ Body text ≥ 15 pt (≥ 13 pt in side panels); captions one line
+□ Body text ≥ 20 pt (≥ 18 pt in side panels); captions one line
 □ No decorative elements that do not carry content
 ```
 

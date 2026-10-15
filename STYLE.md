@@ -12,11 +12,11 @@ Reproducibility takes priority over creativity. Do not invent alternate palettes
 
 | Item | Value |
 |------|-------|
-| Canvas | 10 × 5.625 in (16:9). Base on `template.pptx` when one is provided. |
+| Canvas | 13.333 × 7.5 in (16:9), the size of the reference decks. Base on `template.pptx` when one is provided. |
 | Font | **Cambria** for every run, including East-Asian (`a:ea`) and complex-script (`a:cs`) runs. |
 | Background | White on every slide, including the title and conclusions slides. |
 
-The reference decks were authored on a 13.33 × 7.5 in canvas. All sizes here are the reference sizes × 0.75, so a deck built here and scaled to 13.33 in matches the references (22 pt title ≈ 28–32 pt, 15 pt body = 20 pt).
+Sizes and positions in §3 were measured from the three reference decks (median over all slides). Where the decks differ, the value used in two of the three decks is chosen and the other value is noted.
 
 ## 2. Palette
 
@@ -31,20 +31,25 @@ The reference decks were authored on a 13.33 × 7.5 in canvas. All sizes here ar
 
 No blue, no green, no orange in slide chrome. Figures follow the same rule where you control them: red `C00000` for the focal series, gray `6B6B6B` for baselines.
 
-## 3. Type scale (10 in canvas)
+## 3. Type scale and positions (13.333 × 7.5 in canvas)
 
 | Element | Size | Weight | Colour | Position |
 |---------|------|--------|--------|----------|
-| Page title | 22 pt | Bold | Black | Top-left `(0.5, 0.38)`, single line (≤ ~52 characters) |
-| Section header | 16 pt | Bold | Red, with red `•` bullet | `(0.5, 1.05)`; further headers below the body they introduce |
-| Body | 15 pt (13 pt minimum for dense side panels) | Regular | Text; key phrases red | Indented 0.22 in under the section header, black `•` bullets |
-| Take-home box | 15 pt | Regular; key phrase red bold | — | Bottom, centred, `y ≈ 4.72` |
-| Table cells | 13 pt | Header bold | Black / Text; key cells red bold | — |
-| Caption | 12 pt | `Fig. N.` / `Tab. N.` bold, rest regular | Text | Directly beneath the exhibit, single line |
-| Citation | 8 pt | Regular | Muted | Bottom-left `(0.1, 5.30)`, full reference |
-| Page number | 10 pt | Regular | Text | Bottom-right |
-| Agenda items | 18 pt | Bold | Black (current) / `BFBFBF` (others) | Line spacing 200 % |
-| Deck title | 22 pt | Bold | Black; key phrase red | Centred |
+| Page title | 28 pt (the 2026-09 conference deck used 32 pt) | Bold | Black | Top-left `(0.5, 0.5)`, single line (≤ ~54 characters); box width 10 in keeps the logo corner free |
+| Section header | 20 pt | Bold | Red, with red `•` bullet | `(0.5, 1.5)`; further headers below the body they introduce |
+| Lead sentence | 20 pt | Regular; inline label (e.g. "Objective:") red bold | Text | `(0.5, 1.3)` on slides without a section header |
+| Body | 20 pt (18 pt in side panels next to a figure) | Regular | Text; key phrases red | Bullet indent 0.31 in, aligned under the section-header text |
+| Take-home box | 20 pt | Regular; key phrase red bold | — | Bottom, centred; bottom edge at `y = 6.85` |
+| Table cells | 18 pt (compact side tables 14 pt) | Header bold | Black / Text; key cells red bold | Row height 0.45 in (compact 0.34 in) |
+| Caption / label under an image | 18 pt | `Fig. N.` / `Tab. N.` bold, rest regular | Text | Directly beneath the exhibit, single line |
+| Labels inside diagrams | 14 pt | Regular; "Input:" / "Output:" bold | Text / red | Inside figures |
+| Concept box | Header 18 pt, bullets 16 pt | Header bold | Text | Row of boxes, ~1.8–2.2 in tall |
+| Citation | 10.5 pt | Regular | Muted | Bottom-left `(0.1, 7.02)`, full reference |
+| Page number | 14 pt | Regular | Text | Bottom-right |
+| Agenda items | 24 pt | Bold | Black (current) / `BFBFBF` (others) | Line spacing 200 %, box at `(1.9, 1.7)` |
+| Deck title | 28 pt | Bold | Black; key phrase red | Centred, `y ≈ 2.6–4.2` |
+| Authors / presenter block | 20 pt | Authors regular; "Presenter:" and affiliation bold | Black | Authors centred at `y = 4.6`; presenter block from `(8.0, 6.3)` |
+| Logo | Width 2.6 in | — | — | Top-right corner |
 
 ## 4. Slide elements
 
@@ -75,7 +80,7 @@ Inside body text, mark the two to five words that carry the point in red (`*text
 ### Figures and captions
 - Figure on the left, interpretation (section header + 2–3 bullets) on the right, when a slide has one exhibit plus commentary.
 - Caption under the figure: `Fig. N.` bold + one regular sentence. Must fit on one line; shorten it if it wraps.
-- Short descriptive labels under a row of images (e.g. "Pedestrian level comfort", "(Lyu et al., 2025)") are 12 pt, centred under each image.
+- Short descriptive labels under a row of images (e.g. "Pedestrian level comfort", "(Lyu et al., 2025)") are 18 pt, centred under each image (`add_caption` with `label=""`).
 - Annotate the focal point inside the figure in red (`C00000`): arrow, circle, or a label such as `RL2E: 0.12`.
 
 ### Concept boxes
@@ -88,7 +93,7 @@ Page title "Content". List of the deck's sections; the current section is black 
 White background. Deck title centred, bold, black, with the key phrase in red. Author list centred below (corresponding author marked `*`). Presenter block bottom-right: a red vertical bar before "**Presenter:** Name" and before the bold affiliation line. Institution logo top-right if available. No dark background, no accent rule.
 
 ### Citations
-Full reference (authors, title, venue, year, DOI) in 8 pt muted text at the bottom-left of the slide where the source is used. Short in-text form "(Author et al., Year)" may also appear beside the figure.
+Full reference (authors, title, venue, year, DOI) in 10.5 pt muted text at the bottom-left of the slide where the source is used. Short in-text form "(Author et al., Year)" may also appear beside the figure.
 
 ## 5. Never
 
@@ -110,4 +115,4 @@ Render the deck (`python render.py deck.pptx out_dir`: PowerPoint COM on Windows
 - red bullets on section headers;
 - page titles and captions on one line;
 - no element overlap and nothing outside the slide;
-- no text below 13 pt except citations and page numbers.
+- no text below 14 pt except citations.

@@ -2,7 +2,7 @@
 
 One python-pptx pattern per required slide type, built from the helpers in [pptx_style.py](pptx_style.py). Visual rules are in [STYLE.md](STYLE.md); do not restate fonts or colours in slide code.
 
-Coordinates are inches on the 10 × 5.625 in canvas. Give `add_figure` both `w` and `h`: the image is fitted inside that box (aspect kept), so it never spills into the take-home box or off the slide. Markup in any text argument: `**red bold**`, `*red*`.
+Coordinates are inches on the 13.333 × 7.5 in canvas. Give `add_figure` both `w` and `h`: the image is fitted inside that box (aspect kept), so it never spills into the take-home box or off the slide. Markup in any text argument: `**red bold**`, `*red*`.
 
 ---
 
@@ -23,12 +23,16 @@ Layout grid used by every pattern:
 
 | Region | y (in) | Helper |
 |--------|--------|--------|
-| Page title | 0.38 | `content_slide` / `add_page_title` |
-| First section header | 1.05 | `add_section_header` |
-| Body under header | header y + 0.40 | `add_body` |
-| Exhibit area | 1.0 – 4.5 | `add_figure`, `add_table`, `add_concept_boxes` |
-| Take-home box | 4.72 | `add_takehome_box` |
-| Citation | 5.30 | `add_citation` |
+| Page title | 0.50 | `content_slide` / `add_page_title` |
+| Lead sentence (no section header) | 1.30 | `add_body(..., y=1.3, bullets=False)` |
+| First section header | 1.50 | `add_section_header` |
+| Body under header | header y + 0.50 | `add_body` |
+| Exhibit area | 1.3 – 6.2 | `add_figure`, `add_table`, `add_concept_boxes` |
+| Take-home box | bottom edge at 6.85 | `add_takehome_box` |
+| Citation | 7.02 | `add_citation` |
+| Page number | bottom-right | `content_slide(page=...)` |
+
+Columns for two-column slides: left column x = 0.5, w ≈ 6.0; right column x ≈ 6.9, w ≈ 5.9. For a figure-dominant slide: figure x = 0.5, w ≈ 7.4; text column x = 8.2, w ≈ 4.6.
 
 ---
 
@@ -73,9 +77,9 @@ ps.add_section_header(s, "Current practice:")
 ps.add_body(s, [
     "One CFD case takes **10³–10⁴ s** of compute",
     "Design iterations need *hundreds* of cases",
-])
+], h=1.2)
 # Optional: row of images with short centred labels underneath
-# ps.add_figure(s, "a.png", 0.6, 2.2, w=2.8, h=2.0, caption=("", "Pedestrian level comfort"))
+# ps.add_figure(s, "a.png", 0.8, 3.4, w=3.7, h=2.7, caption=("", "Pedestrian level comfort"))
 ps.add_citation(s, "A. Author, B. Author, Title, Journal 1 (2025) 1–10. https://doi.org/...")
 ps.add_takehome_box(s, "A **faster assessment tool** is needed during early-stage design.")
 ```
@@ -90,13 +94,13 @@ ps.add_takehome_box(s, "A **faster assessment tool** is needed during early-stag
 page += 1
 s = ps.content_slide(prs, "Neural solvers can replace CFD for design screening", page=page, logo=LOGO)
 ps.add_body(s, ["**Objective:** replace the numerical solver with a neural solver for wind "
-                "assessment in urban design scenarios."], y=1.0, bullets=False)
-ps.add_figure(s, "pipeline.png", 0.5, 1.7, w=9.0, h=1.35)          # input → model → output schematic
+                "assessment in urban design scenarios."], x=0.5, y=1.3, w=12.3, bullets=False)
+ps.add_figure(s, "pipeline.png", 0.5, 2.15, w=12.33, h=2.0)   # input → model → output schematic
 ps.add_concept_boxes(s, [
     ("Applicability", ["Real-world building layouts", "Direct 3D prediction"]),
     ("Flexibility",   ["Real-time assessment", "Arbitrary inflow conditions"]),
     ("Accuracy",      ["Key flow structures", "Benchmarked vs. CFD and wind tunnel"]),
-], y=3.15, h=1.4)
+], y=4.3, h=1.8)
 ps.add_takehome_box(s, "Goal: **one model for arbitrary layouts and inflow conditions**.")
 ```
 
@@ -106,38 +110,38 @@ ps.add_takehome_box(s, "Goal: **one model for arbitrary layouts and inflow condi
 
 **Purpose:** What the audience needs to evaluate the findings, not procedural completeness. 1–2 slides; detail goes to the appendix.
 
-Two-column pattern (figure right, labelled blocks left), as in the reference "model design" slides:
+Two-column pattern (labelled blocks left, figure right), as in the reference "model design" slides:
 
 ```python
 page += 1
 s = ps.content_slide(prs, "Modulation injects inflow into the backbone", page=page, logo=LOGO)
-ps.add_section_header(s, "Backbone network:", w=4.6)
+ps.add_section_header(s, "Backbone network:", w=6.0)
 ps.add_body(s, ["Physics-attention transformer for canonical flow patterns [1]"],
-            w=4.4, h=0.8, bullets=False)
-ps.add_section_header(s, "Conditional modulation:", y=2.35, w=4.6)
+            w=5.7, h=1.1, bullets=False)
+ps.add_section_header(s, "Conditional modulation:", y=3.2, w=6.0)
 ps.add_body(s, ["Geometry and inflow encoders produce *scale & shift* per layer"],
-            y=2.75, w=4.4, h=0.8, bullets=False)
-ps.add_figure(s, "architecture.png", 5.2, 0.95, w=4.3, h=3.6)
+            y=3.7, w=5.7, h=1.1, bullets=False)
+ps.add_figure(s, "architecture.png", 6.9, 1.3, w=5.9, h=4.8)
 ps.add_citation(s, "[1] H. Wu et al., Transolver: A Fast Transformer Solver for PDEs on General Geometries (2024).")
 ps.add_takehome_box(s, "Geometry and inflow are learned **separately**, then fused by modulation.")
 ```
 
-Equations: insert them as images rendered at ≥ 15 pt equivalent, or use PowerPoint's equation editor afterwards. Define every symbol on the same slide.
+Equations: insert them as images rendered at ≥ 20 pt equivalent, or use PowerPoint's equation editor afterwards. Define every symbol on the same slide.
 
 ---
 
 ## 6. Results Slide: Figure
 
-**Purpose:** One finding, impossible to miss. Figure left (~5.2 in), interpretation right (~3.3 in).
+**Purpose:** One finding, impossible to miss. Figure left (~7.4 in), interpretation right (~4.6 in).
 
 ```python
 page += 1
 s = ps.content_slide(prs, "Error falls 35% below baseline with more data", page=page, logo=LOGO)
-ps.add_figure(s, "scaling.png", 0.5, 1.0, w=5.2, h=3.55,
+ps.add_figure(s, "scaling.png", 0.5, 1.3, w=7.4, h=4.9,
               caption=("Fig. 1.", "Test error vs. training set size."))
-ps.add_section_header(s, "Observations:", x=6.0, w=3.5)
+ps.add_section_header(s, "Observations:", x=8.2, w=4.6)
 ps.add_body(s, ["Error decreases monotonically", "Baseline saturates at **0.176**"],
-            x=6.22, y=1.45, w=3.3, size=13)
+            x=8.51, w=4.3, size=18)
 ps.add_takehome_box(s, "More data keeps helping: **no saturation** up to 3,500 cases.")
 ```
 
@@ -154,16 +158,16 @@ page += 1
 s = ps.content_slide(prs, "Our model has the lowest error on all four metrics", page=page, logo=LOGO)
 ps.add_section_header(s, "Benchmark:")
 ps.add_table(s, ["Model", "RL2E", "MAE(u)", "MAE(v)", "MAE(w)"],
-             [["Baseline A"   , "0.319", "0.480", "0.163", "0.072"],
-              ["Baseline B",    "0.176", "0.215", "0.096", "0.044"],
-              ["Ours",   "0.115", "0.122", "0.067", "0.031"]],
-             x=1.5, y=1.55, w=7.0, col_widths=[2.2, 1.2, 1.2, 1.2, 1.2],
+             [["Baseline A", "0.319", "0.480", "0.163", "0.072"],
+              ["Baseline B", "0.176", "0.215", "0.096", "0.044"],
+              ["Ours",       "0.115", "0.122", "0.067", "0.031"]],
+             x=1.67, y=2.1, w=10.0, col_widths=[3.2, 1.7, 1.7, 1.7, 1.7],
              highlight=[(2, 1), (2, 2), (2, 3), (2, 4)])
-ps.add_caption(s, "Tab. 1.", "Errors on 400 held-out layouts.", 1.5, 2.95, 7.0)
+ps.add_caption(s, "Tab. 1.", "Errors on 400 held-out layouts.", 1.67, 4.0, 10.0)
 ps.add_takehome_box(s, "RL2E drops from 0.176 to **0.115** (-34.6%).")
 ```
 
-`highlight` takes (data-row, column) indices, header excluded. Do not colour whole rows.
+`highlight` takes (data-row, column) indices, header excluded. Do not colour whole rows. Compact tables beside a figure: `size=14, row_h=0.34`.
 
 ---
 
@@ -175,10 +179,10 @@ ps.add_takehome_box(s, "RL2E drops from 0.176 to **0.115** (-34.6%).")
 page += 1
 s = ps.content_slide(prs, "Accuracy holds beyond the training inflow range", page=page, logo=LOGO)
 ps.add_section_header(s, "Interpretation:")
-ps.add_body(s, ["OOD error doubles (0.12 → 0.23) but stays below the best baseline"], h=0.9)
-ps.add_section_header(s, "Main limitation:", y=2.45)
+ps.add_body(s, ["OOD error doubles (0.12 → 0.23) but stays below the best baseline"], h=1.1)
+ps.add_section_header(s, "Main limitation:", y=3.3)
 ps.add_body(s, ["**External validity:** trained on one city; transfer to other morphologies untested"],
-            y=2.85, h=0.9)
+            y=3.8, h=1.1)
 ps.add_takehome_box(s, "The model **generalizes beyond the training distribution**; transfer across cities is untested.")
 ```
 
@@ -192,17 +196,17 @@ ps.add_takehome_box(s, "The model **generalizes beyond the training distribution
 page += 1
 s = ps.content_slide(prs, "Conclusions", page=page, logo=LOGO)
 ps.add_body(s, ["We introduced a neural surrogate for 3D flow prediction under "
-                "**arbitrary inflow conditions**:"], y=1.0, bullets=False)
+                "**arbitrary inflow conditions**:"], x=0.5, y=1.3, w=12.3, bullets=False)
 ps.add_body(s, [
     "Outperforms all baselines in **accuracy**: RL2E 0.115, 34.6% below the best baseline",
     "**Consistent accuracy** across a wide range of inflow conditions, including OOD",
     "Validated against two wind tunnel benchmarks for **real-world assessments**",
-], y=1.65, h=2.0)
-ps.add_body(s, ["Contact: name@university.edu  |  Preprint: link"], y=3.9, size=12, bullets=False)
+], y=2.1, h=2.8)
+ps.add_body(s, ["Contact: name@university.edu  |  Preprint: link"], y=5.2, size=16, bullets=False)
 ps.add_takehome_box(s, "One model, **any inflow**, CFD-level accuracy in seconds.")
 ```
 
-Do not follow it with "Thank You" or a blank slide. A QR code (`ps.add_figure(s, "qr.png", 8.4, 3.5, w=1.0)`) may sit on this slide.
+Do not follow it with "Thank You" or a blank slide. A QR code (`ps.add_figure(s, "qr.png", 11.3, 4.4, w=1.4, h=1.4)`) may sit on this slide.
 
 ---
 
@@ -214,7 +218,7 @@ s = ps.content_slide(prs, "References", page=page, logo=LOGO)
 ps.add_body(s, [
     "H. Wu, H. Luo, H. Wang, J. Wang, M. Long, Transolver: A Fast Transformer Solver for PDEs on General Geometries, ICML (2024).",
     "X.I.A. Yang, J. Sadique, R. Mittal, C. Meneveau, Exponential roughness layer ..., J. Fluid Mech. 789 (2016) 127–165.",
-], y=1.0, h=4.2, size=11, bullets=False, space_after=8)
+], x=0.5, y=1.3, w=12.3, h=5.4, size=14, bullets=False, space_after=10)
 ```
 
 No take-home box.
@@ -228,13 +232,13 @@ No take-home box.
 ```python
 page += 1
 s = ps.content_slide(prs, "Appendix A: Modulation beats early fusion", page=page, logo=LOGO)
-ps.add_section_header(s, "Conditioning mechanism:", w=4.6)
+ps.add_section_header(s, "Conditioning mechanism:", w=6.0)
 ps.add_table(s, ["Approach", "Train loss", "Test RL2E"],
              [["Early fusion", "0.0591", "0.1356"],
               ["Cross-attention", "0.0812", "0.1193"],
               ["Modulation", "0.0308", "0.1150"]],
-             x=0.7, y=1.55, w=4.0, highlight=[(2, 1), (2, 2)])
-ps.add_figure(s, "loss_curves.png", 5.2, 1.0, w=4.3, h=3.5)
+             x=0.8, y=2.1, w=5.6, col_widths=[2.4, 1.6, 1.6], highlight=[(2, 1), (2, 2)])
+ps.add_figure(s, "loss_curves.png", 6.9, 1.3, w=5.9, h=4.8)
 ps.add_takehome_box(s, "Modulation gives the **lowest train and test error**.")
 ```
 
@@ -265,6 +269,6 @@ python render.py deck.pptx deck_render/
 □ Captions: "Fig. N." / "Tab. N." bold, one line
 □ Every borrowed figure/number: full reference at the slide bottom
 □ References slide complete; Conclusions slide last main slide with contact info
-□ Body text ≥ 15 pt (side panels ≥ 13 pt)
+□ Body text ≥ 20 pt (side panels ≥ 18 pt)
 □ Rendered images inspected: no overlap, no wrapping titles, nothing off-slide
 ```

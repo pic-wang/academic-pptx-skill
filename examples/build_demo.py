@@ -37,7 +37,7 @@ def make_figure(path):
     sizes = np.array([500, 1000, 2000, 3500])
     err_a = np.array([0.168, 0.152, 0.131, 0.115])
     err_b = np.array([0.205, 0.193, 0.181, 0.176])
-    fig, ax = plt.subplots(figsize=(6.4, 3.6), dpi=200)
+    fig, ax = plt.subplots(figsize=(7.4, 4.4), dpi=200)
     ax.plot(sizes, err_b, "o-", color="#6B6B6B", label="Baseline")
     ax.plot(sizes, err_a, "o-", color="#C00000", label="Ours")
     ax.annotate("-35% vs. baseline", xy=(3500, 0.115), xytext=(2300, 0.150),
@@ -66,10 +66,10 @@ def build(out, template=None, logo=None):
     ps.add_section_header(s, "Current practice")
     ps.add_body(s, ["One CFD case takes **10³–10⁴ s** of compute",
                     "Design iterations need *hundreds* of cases",
-                    "Wind tunnel tests give sparse measurements only"])
+                    "Wind tunnel tests give sparse measurements only"], h=1.6)
     ps.add_concept_boxes(s, [("Applicability", ["Real-world layouts"]),
                              ("Flexibility", ["Arbitrary inflow"]),
-                             ("Accuracy", ["Benchmarked vs. CFD"])], y=2.75, h=1.0)
+                             ("Accuracy", ["Benchmarked vs. CFD"])], y=3.85, h=1.3)
     ps.add_citation(s, "A. Author, B. Author, Example reference title, Journal 1 (2025) 1–10.")
     ps.add_takehome_box(s, "A **faster assessment tool** is needed during early-stage design.")
 
@@ -77,10 +77,10 @@ def build(out, template=None, logo=None):
     s = ps.content_slide(prs, "Research question", page=n, logo=logo)
     ps.add_section_header(s, "Question")
     ps.add_body(s, ["Can one neural solver predict 3D flow for *unseen* inflow profiles "
-                    "with error below 0.15 relative L2?"], bullets=False)
-    ps.add_section_header(s, "Contribution", y=2.3)
+                    "with error below 0.15 relative L2?"], h=1.1, bullets=False)
+    ps.add_section_header(s, "Contribution", y=3.2)
     ps.add_body(s, ["Parametric inflow generator covering realistic profiles",
-                    "Conditional modulation of a transformer backbone"], y=2.7)
+                    "Conditional modulation of a transformer backbone"], y=3.7, h=1.6)
     ps.add_takehome_box(s, "Target: **generalize across inflow conditions** without retraining.")
 
     n += 1
@@ -90,10 +90,10 @@ def build(out, template=None, logo=None):
     s = ps.content_slide(prs, "Error falls 35% below baseline with more data", page=n, logo=logo)
     fig = ROOT / "examples" / "_demo_fig.png"
     make_figure(fig)
-    ps.add_figure(s, fig, 0.5, 1.0, w=5.2, h=3.55, caption=("Fig. 1.", "Test error vs. training set size."))
-    ps.add_section_header(s, "Observations", x=6.0, y=1.05, w=3.5)
+    ps.add_figure(s, fig, 0.5, 1.3, w=7.4, h=4.9, caption=("Fig. 1.", "Test error vs. training set size."))
+    ps.add_section_header(s, "Observations", x=8.2, w=4.6)
     ps.add_body(s, ["Error decreases monotonically", "Baseline saturates at **0.176**"],
-                x=6.22, y=1.45, w=3.3, size=13)
+                x=8.51, w=4.3, size=18)
     ps.add_takehome_box(s, "More data keeps helping: **no saturation** up to 3,500 cases.")
 
     n += 1
@@ -103,9 +103,9 @@ def build(out, template=None, logo=None):
                  [["Baseline A", "0.319", "0.480", "0.163", "0.072"],
                   ["Baseline B", "0.176", "0.215", "0.096", "0.044"],
                   ["Ours", "0.115", "0.122", "0.067", "0.031"]],
-                 x=1.5, y=1.55, w=7.0, col_widths=[2.2, 1.2, 1.2, 1.2, 1.2],
+                 x=1.67, y=2.1, w=10.0, col_widths=[3.2, 1.7, 1.7, 1.7, 1.7],
                  highlight=[(2, 1), (2, 2), (2, 3), (2, 4)])
-    ps.add_caption(s, "Tab. 1.", "Errors on 400 held-out layouts.", 1.5, 2.95, 7.0)
+    ps.add_caption(s, "Tab. 1.", "Errors on 400 held-out layouts.", 1.67, 4.0, 10.0)
     ps.add_takehome_box(s, "RL2E drops from 0.176 to **0.115** (-34.6%).")
 
     n += 1
@@ -114,19 +114,19 @@ def build(out, template=None, logo=None):
     n += 1
     s = ps.content_slide(prs, "Conclusions", page=n, logo=logo)
     ps.add_body(s, ["We introduced a neural solver for flow under **arbitrary inflow conditions**."],
-                y=1.0, bullets=False)
+                x=0.5, y=1.3, w=12.3, h=0.6, bullets=False)
     ps.add_body(s, ["Lowest error among baselines: RL2E **0.115**",
                     "Error stays within *2x* on out-of-distribution inflow",
-                    "Validated against two wind tunnel benchmarks"], y=1.6)
+                    "Validated against two wind tunnel benchmarks"], y=2.1, h=2.4)
     ps.add_body(s, ["Contact: author@example.edu  |  Preprint: example.org/paper"],
-                y=3.6, size=12, bullets=False)
+                y=5.2, h=0.5, size=16, bullets=False)
     ps.add_takehome_box(s, "One model, **any inflow**, CFD-level accuracy in seconds.")
 
     n += 1
     s = ps.content_slide(prs, "References", page=n, logo=logo)
     ps.add_body(s, ["A. Author, B. Author, Example reference one, Journal 1 (2025) 1–10.",
                     "C. Author, Example reference two, Conference (2024)."],
-                y=1.0, size=11, bullets=False)
+                x=0.5, y=1.3, w=12.3, size=14, bullets=False)
 
     prs.save(out)
     missing = ps.check_takehome(prs, exempt={1, 2, 5, 8, n})

@@ -1,6 +1,6 @@
 # Academic Presentation Content Guidelines
 
-This file governs what goes on the slides. How it looks is defined in [STYLE.md](STYLE.md); font sizes quoted here refer to the 10 × 5.625 in canvas used by this skill.
+This file governs what goes on the slides. How it looks is defined in [STYLE.md](STYLE.md); font sizes quoted here refer to the 13.333 × 7.5 in canvas used by this skill.
 
 ## 1. Argument Structure
 
@@ -47,9 +47,9 @@ The most important formatting rule. Every content slide title must be a complete
 
 **Ghost deck test:** Read only the action titles in sequence. They should tell the complete argument. If they don't, the deck's logic needs repair — fix the titles and/or restructure before building.
 
-**Title length:** One line, about 52 characters at 22 pt. If more is needed, the point is not sharp enough yet; move the supporting number into the take-home box.
+**Title length:** One line, about 54 characters at 28 pt. If more is needed, the point is not sharp enough yet; move the supporting number into the take-home box.
 
-**Title font:** 22 pt Cambria bold black (STYLE.md). Action titles must be immediately readable, including from the back of the room.
+**Title font:** 28 pt Cambria bold black (STYLE.md). Action titles must be immediately readable, including from the back of the room.
 
 ### Take-home box
 Every content slide ends with a red dashed take-home box (STYLE.md §4). It holds one sentence: the slide's conclusion with its supporting number, key phrase in red bold.
@@ -110,8 +110,8 @@ Omit articles and filler phrases where meaning is preserved.
 - Instead of: "Our study found that the intervention reduced costs significantly."
 - Use: "Intervention reduced costs by 23% (p < 0.01)"
 
-### Body font: 15 pt minimum
-15 pt on the 10 in canvas equals 20 pt on a 13.33 in canvas. This is a floor, not a target; side panels next to a figure may use 13 pt. If text must be smaller to fit, remove content until it fits.
+### Body font: 20 pt minimum
+This is a floor, not a target; side panels next to a figure may use 18 pt. If text must be smaller to fit, remove content until it fits.
 
 ### Use red and bold sparingly
 Mark the two to five words that carry each point in red (`*text*`) or red bold (`**text**`). Inline labels ("Objective:", "Input:", "Output:") are red bold. Italics for statistical notation and symbols. Do not colour whole sentences red outside the take-home box.
@@ -121,7 +121,7 @@ Mark the two to five words that carry each point in red (`*text*`) or red bold (
 ## 5. Citations and Attribution
 
 ### Cite on the slide
-Every claim, figure, or dataset that is not your own original work must be cited on the slide where it appears. Place the full reference (authors, title, venue, year, DOI) at the bottom-left of the slide in 8 pt muted text (`add_citation`). A short form "(Author et al., Year)" may also sit beside the figure.
+Every claim, figure, or dataset that is not your own original work must be cited on the slide where it appears. Place the full reference (authors, title, venue, year, DOI) at the bottom-left of the slide in 10.5 pt muted text (`add_citation`). A short form "(Author et al., Year)" may also sit beside the figure.
 
 Use your field's standard format:
 - Sciences / social sciences: (Author, Year) parenthetical
@@ -237,7 +237,7 @@ When you say "I'll stop there," the conclusions slide should already be on scree
 - Use plain, direct sentence structures
 
 ### Accessibility basics
-- Minimum 15 pt body text and 22 pt titles on the 10 in canvas
+- Minimum 20 pt body text and 28 pt titles
 - High contrast between text and background (dark text on white, or white on dark)
 - Do not rely on colour alone to convey meaning (use labels, patterns, or shapes as well)
 - Provide alt text on figures if the slides will be circulated as a PDF
@@ -253,7 +253,7 @@ When you say "I'll stop there," the conclusions slide should already be on scree
 | Reading the slides aloud | Slides carry evidence; the presenter carries the argument |
 | Evidence without a "so what" | Annotate the key finding directly on the chart |
 | Uncited borrowed figures | Cite on the slide; full reference on References slide |
-| Body text < 15 pt | Remove content until it fits at 15 pt |
+| Body text < 20 pt | Remove content until it fits at 20 pt |
 | Content slide without take-home box | Add one sentence stating the slide's conclusion |
 | Inconsistent formatting | Use the `pptx_style.py` helpers; never set fonts or colours by hand |
 | Slides you won't discuss | Move to appendix if you won't have time |

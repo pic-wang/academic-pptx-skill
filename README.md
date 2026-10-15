@@ -16,11 +16,11 @@ A Claude Skill for academic presentations (conference talks, group meetings, sem
 | Title / conclusions slides | Dark navy background | White background; red key phrase in the deck title |
 | Title rule | Gray divider under every title | No line under titles |
 | Slide conclusion | Action title only | Action title + red dashed take-home box on every content slide |
-| Section headers | 22 pt blue | Red `•` + 16 pt bold red |
+| Section headers | 22 pt blue | Red `•` + 20 pt bold red |
 | Tables | Not specified | Three black rules, no grid, zebra rows, key cells red bold |
 | Section navigation | Dark section dividers / breadcrumb bar | "Content" agenda slide, current section black, others gray |
-| Citations | 12–14 pt muted line | Full reference, 8 pt muted, bottom-left |
-| Font sizes | 26 pt title / 20 pt body | 22 pt title / 15 pt body on a 10 in canvas (= 20 pt on 13.33 in) |
+| Citations | 12–14 pt muted line | Full reference, 10.5 pt muted, bottom-left |
+| Canvas and font sizes | 10 × 5.625 in; 26 pt title / 20 pt body | 13.333 × 7.5 in; 28 pt title / 20 pt body / 18 pt captions, measured from the reference decks |
 | QA | markitdown + images | `check_takehome()` + `render.py` (PowerPoint COM or LibreOffice) |
 
 The content rules in `content_guidelines.md` are kept from upstream, with sizes and annotation colours adjusted to the house style.
