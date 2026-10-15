@@ -1,152 +1,113 @@
 ---
 name: academic-pptx
-description: "Use this skill whenever the user wants to create or improve a presentation for an academic context — conference papers, seminar talks, thesis defenses, grant briefings, lab meetings, invited lectures, or any presentation where the audience will evaluate reasoning and evidence. Triggers include: 'conference talk', 'seminar slides', 'thesis defense', 'research presentation', 'academic deck', 'academic presentation'. Also triggers when the user asks to 'make slides' in combination with academic content (e.g., 'make slides for my paper on X', 'create a presentation for my dissertation defense', 'build a deck for my grant proposal'). This skill governs CONTENT and STRUCTURE decisions. For the technical work of creating or editing the .pptx file itself, also read the pptx SKILL.md."
-license: Proprietary. LICENSE.txt has complete terms
+description: "Use this skill whenever the user wants to create, update, or improve a .pptx presentation for an academic context: conference talks, seminar slides, group meetings / lab meetings / weekly reports, thesis defenses, grant briefings, invited lectures. Triggers include 'slides', 'deck', 'presentation', 'pptx', 'group meeting', 'conference talk', 'thesis defense', and Chinese requests such as '做slides', '组会', '汇报'. The skill governs CONTENT and STRUCTURE (argument, action titles, deck architecture) and the house VISUAL STYLE (Cambria, red C00000 accent, red dashed take-home box, three-line tables). Build files with python-pptx through pptx_style.py."
+license: MIT (see LICENSE)
 ---
 
-# Academic Presentations Skill
+# Academic Presentations Skill (house style)
 
 ## How This Skill Works
 
-This skill has two layers:
+This skill has three layers. Read all three before writing any code.
 
-1. **This file** — governs content, argument structure, and design standards for academic presentations. Read it fully before planning any slides.
-2. **PPTX skill** — governs the technical implementation (creating, editing, and QA-ing the .pptx file). Read it too.
+| Layer | File | Governs |
+|-------|------|---------|
+| Content | [content_guidelines.md](content_guidelines.md) | Argument structure, action titles, exhibits, citations, deck architecture, timing |
+| Visual style | [STYLE.md](STYLE.md) | Canvas, font, palette, type scale, take-home box, tables, captions, agenda slide, QA |
+| Implementation | [slide_patterns.md](slide_patterns.md) + [pptx_style.py](pptx_style.py) | One python-pptx pattern per slide type, built from the helpers |
 
-**Always read both before writing any code or creating any files.**
+`examples/build_demo.py` builds a complete demo deck with every helper. Run it once if unsure how the helpers combine.
 
----
-
-## Quick Reference
-
-| Task | Guide |
-|------|-------|
-| Content planning, argument structure, slide-by-slide rules | [content_guidelines.md](content_guidelines.md) |
-| Per-slide-type patterns (title, methods, results, etc.) | [slide_patterns.md](slide_patterns.md) |
-| Technical creation from scratch | PPTX skill → `pptxgenjs.md` |
-| Technical editing of an existing file | PPTX skill → `editing.md` |
+If an Anthropic `pptx` skill is also installed, use it only for generic file operations (reading existing decks, `markitdown` extraction). Its design defaults do not apply; STYLE.md overrides them.
 
 ---
 
 ## Step 1: Identify Presentation Type
 
-Before planning a single slide, determine which mode applies.
+### Structured Argument (default)
+Conference papers, seminar talks, group meetings, thesis defenses, grant briefings, policy or consulting-style research deliverables.
 
-### Structured Argument (default for academic work)
-
-Use for: conference papers, seminar talks, thesis defenses, dissertation chapters, grant briefings, internal lab presentations, policy briefings, consulting-style research deliverables.
-
-**Priority order: argument structure → data → layout → aesthetics.**
-
-Follow [content_guidelines.md](content_guidelines.md) in full.
+**Priority order: argument structure → data → layout → aesthetics.** Follow content_guidelines.md in full.
 
 ### Visual / Narrative
-
-Use for: public engagement talks, science communication to non-specialist audiences, funding pitches to lay panels, event keynotes.
-
-Follow the PPTX skill's design-forward guidelines. Argument structure still matters, but visual storytelling and emotional engagement take priority.
+Public engagement talks and lay audiences. Argument structure still matters, but more slides may be image-led. The visual style in STYLE.md still applies.
 
 ### When in doubt
-
-Default to **Structured Argument**. If the user mentions a paper, a study, a dataset, a thesis, a grant, or a conference, they almost certainly want structured argument mode.
+Default to Structured Argument. A paper, study, dataset, thesis, grant, or conference implies Structured Argument.
 
 ---
 
 ## Step 2: Plan the Deck Before Creating Any Slides
 
-Produce a slide-by-slide outline (title, action title, exhibit type) and confirm with the user if the deck is more than 10 slides or if the content is complex. Do not start building until the outline is agreed.
+Produce a slide-by-slide outline with four columns: page title (action title), section, exhibit, take-home sentence. Confirm it with the user if the deck exceeds 10 slides or the content is complex. Do not build before the outline is agreed.
 
-Use the ghost deck test during planning: read only the proposed action titles in sequence. They must tell the complete argument. If they don't, fix the outline before building.
+Run the ghost deck test on the outline: read only the page titles in sequence; they must tell the complete argument. Then read only the take-home sentences; they must also tell it, with the key numbers.
 
 ---
 
-## Step 3: Apply Design Standards
+## Step 3: Apply the House Style
 
-Academic presentations use **communication-first design**. These rules override the PPTX skill's design-forward defaults.
+All visual rules live in [STYLE.md](STYLE.md). Summary:
 
-### Color
+- 10 × 5.625 in, white background, **Cambria** everywhere.
+- Palette: `1A1A1A` text, `000000` titles and table rules, `C00000` red accent, `F2F2F2` zebra gray, `6B6B6B` muted. No blue, green, or orange.
+- Page title 22 pt bold black top-left, one line, no underline.
+- Section header: red `•` + 16 pt bold red text.
+- Body 15 pt, key phrases in red / red bold.
+- **Every content slide ends with a red dashed take-home box** stating its conclusion, key phrase in red bold.
+- Tables: three black rules, no grid, zebra rows, key cells red bold, no `tableStyleId`.
+- Captions 12 pt, `Fig. N.` / `Tab. N.` bold, single line.
+- An agenda ("Content") slide with the current section highlighted opens each major section.
 
-- White background for all content slides.
-- One sans-serif font throughout (Arial, Calibri, or Helvetica — confirm with user or match their institution's template if provided).
-- Maximum three colors: one primary, one accent, one for emphasis or alerts. Default: dark navy primary (`1F4E79`), mid-blue accent (`2E75B6`), white or off-white background.
-- No decorative color gradients, no themed color palettes unless the user explicitly requests them.
-- Use color to **direct attention** — highlight the key finding on a chart, mark a callout box — not for decoration.
+Use the helpers in `pptx_style.py`: `new_presentation`, `title_slide`, `agenda_slide`, `content_slide`, `add_page_title`, `add_section_header`, `add_body`, `add_takehome_box`, `add_table`, `add_figure`, `add_caption`, `add_citation`, `add_concept_boxes`, `check_takehome`.
 
-### Typography
-
-| Element | Size | Weight |
-|---------|------|--------|
-| Action title | 24–28 pt | Bold |
-| Section header | 20–22 pt | Bold |
-| Body bullets | 20 pt | Regular |
-| Chart labels / annotations | 16–18 pt | Regular |
-| Source citations on slides | 12–14 pt | Regular, muted color |
-
-Single font face. Use size and weight for hierarchy — never multiple typefaces.
-
-### Layout
-
-- Left-align all body text. Center only slide titles and axis labels.
-- Consistent grid: all text boxes and figures align to the same margins (minimum 0.5" from slide edges).
-- For result slides: figure on the left, interpretive bullets on the right. This matches natural left-to-right reading.
-- White space is a signal of analytical clarity — do not fill every inch.
-- 16:9 widescreen is the default. Confirm with the user if they know the venue's aspect ratio.
-
-### Avoid (Academic-Specific)
-
-- **No decorative icons** — icons in colored circles, stock images, clip art are inappropriate for analytical academic presentations.
-- **No accent lines under titles** — use whitespace instead.
-- **No color palettes chosen for aesthetic interest** — use institution colors or the minimal defaults above.
-- **No full-bleed background images on content slides** — reserve for title/section dividers only if desired.
-- **No text-heavy slides** — if the audience is reading, they are not listening. Maximum ~40 words of body text per content slide.
+Python plotting code must start with the user's matplotlib styling block (see the user's CLAUDE.md; `examples/build_demo.py` shows it).
 
 ---
 
 ## Step 4: Build and QA
 
-Follow the PPTX skill's QA procedure in full, including:
-- Content QA via `markitdown`
-- Visual QA via slide images (subagents if available)
-- Fix-and-verify loop until a full pass reveals no new issues
-
-**Additionally, run the academic-specific checks:**
+1. Build the deck with a Python script that imports `pptx_style` (add this skill directory to `sys.path`).
+2. Run `check_takehome(prs, exempt={...})` and fix any slide it reports.
+3. Render: `python render.py deck.pptx out_dir` → one PNG per slide plus contact sheets.
+4. Inspect every image against the QA list in STYLE.md §6 and the academic checklist below.
+5. Fix and re-render until a full pass finds no new issue.
 
 ```
 Academic QA checklist:
-□ Every content slide has an action title (complete sentence stating the takeaway)
-□ Ghost deck test passes (action titles alone tell the full argument)
-□ One exhibit per results slide; each exhibit has a "so what" annotation
-□ Every borrowed figure or data point has an in-slide citation
-□ A References slide exists at the end
-□ Conclusions slide is the last non-appendix slide (not "Thank You" or a blank)
-□ Contact information and/or QR code/link on the final slide
-□ Font sizes are readable from the back of a room (≥ 20 pt body text)
-□ No decorative elements that don't carry content
-□ Section dividers or breadcrumb bar present for decks > 15 slides
+□ Every content slide has an action title (one line, states the takeaway)
+□ Every content slide has a red dashed take-home box
+□ Ghost deck test passes on titles and on take-home sentences
+□ One exhibit per results slide; key finding annotated in red on the exhibit
+□ Every borrowed figure or number has an in-slide citation
+□ References slide exists
+□ Conclusions slide is the last main slide, with contact info
+□ Agenda slide before each major section (decks > 10 slides)
+□ Body text ≥ 15 pt (≥ 13 pt in side panels); captions one line
+□ No decorative elements that do not carry content
 ```
 
 ---
 
 ## Key Principles (Summary)
 
-**Action titles, not topic labels.** Every slide title is a complete sentence stating the takeaway. Reading titles alone should tell the whole argument (ghost deck test).
+**Action titles, not topic labels.** Each page title is a short sentence stating the takeaway. The take-home box restates it with the number that supports it.
 
-**One argument, made well.** Don't present your whole paper. Pick the claim that can be made convincingly in the allotted time. Everything else goes in the appendix.
+**One argument, made well.** Do not present the whole paper. Everything else goes in the appendix.
 
-**One insight per slide.** One exhibit per results slide. Highlight the key finding directly on the chart — don't make the audience hunt for it.
+**One insight per slide.** One exhibit per results slide, with the key finding marked in red on the exhibit.
 
-**Slides support speech; they don't replace it.** Body text is for orientation, not information transfer. The presenter carries the argument; the slide carries the evidence.
+**Slides support speech.** Body text orients the audience; the presenter carries the argument.
 
-**Cite everything borrowed.** Academic integrity applies to slides. In-text citations on the slide, full references on the References slide.
+**Cite everything borrowed.** Full reference at the bottom of the slide, complete list on the References slide.
 
-**End on conclusions.** The conclusions slide stays on screen during Q&A. Never end on "Thank You" or a blank slide.
+**End on conclusions.** The conclusions slide stays on screen during Q&A.
 
 ---
 
 ## Dependencies
 
-Same as PPTX skill:
-- `pip install "markitdown[pptx]"` — text extraction
-- `npm install -g pptxgenjs` — creating from scratch
-- LibreOffice (`soffice`) — PDF conversion
-- Poppler (`pdftoppm`) — PDF to images
+- `pip install python-pptx pillow` (and `matplotlib` for figures)
+- Windows: `pywin32` + Microsoft PowerPoint for rendering
+- Elsewhere: LibreOffice (`soffice`) and Poppler (`pdftoppm`)
+- Optional: `pip install "markitdown[pptx]"` for text extraction from existing decks

@@ -1,58 +1,66 @@
-# Academic Presentations Skill for Claude (plus basic PDF summary of general advice)
+# Academic Presentations Skill for Claude (house style)
 
-A Claude Skill for creating high-quality academic presentations: conference talks, seminar slides, thesis defenses, and grant briefings.  Also includes a PDF which summarizes the advice (does not require use of Claude). 
+A Claude Skill for academic presentations (conference talks, group meetings, seminars, thesis defenses, grant briefings). It combines:
 
-## What It Does
+- the **content and argument rules** of the upstream skill [Gabberflast/academic-pptx-skill](https://github.com/Gabberflast/academic-pptx-skill): action titles, ghost deck test, one exhibit per slide, citations, deck architecture, timing;
+- a **fixed house visual style** derived from three reference decks: Cambria, red `C00000` accent, red dashed take-home box on every content slide, three-line academic tables with zebra rows, agenda slides with the current section highlighted;
+- a **python-pptx helper library** (`pptx_style.py`) that encodes every visual rule, and a renderer (`render.py`) for visual QA.
 
-This skill overrides Claude's default design-forward presentation style and replaces it with communication-first standards appropriate for academic and analytical contexts. When active, Claude will:
+## Changes from upstream
 
-- Write every slide title as a **complete sentence stating the takeaway** ("action title"), not a topic label
-- Structure the deck as a **logical argument** (situation → complication → resolution), not a collection of independent slides
-- Apply the **ghost deck test**: the action titles alone, read in sequence, should tell the full story
-- Place **one exhibit per results slide** and annotate the key finding directly on the chart
-- Apply **citation standards**: in-text citations on every borrowed figure, a References slide at the end
-- End on a **Conclusions slide** that stays on screen during Q&A — never on "Thank You" or a blank
-- Apply minimal, communication-first design: white backgrounds, single sans-serif font, three colours maximum, no decorative icons
+| Area | Upstream | This fork |
+|------|----------|-----------|
+| Build tool | PptxGenJS (JavaScript) | python-pptx via `pptx_style.py` |
+| Font | Arial / Calibri | Cambria everywhere |
+| Palette | Navy `1F4E79`, blue `2E75B6`, yellow highlight | `1A1A1A` text, `000000` rules, `C00000` red accent, `F2F2F2` zebra, `6B6B6B` muted |
+| Title / conclusions slides | Dark navy background | White background; red key phrase in the deck title |
+| Title rule | Gray divider under every title | No line under titles |
+| Slide conclusion | Action title only | Action title + red dashed take-home box on every content slide |
+| Section headers | 22 pt blue | Red `•` + 16 pt bold red |
+| Tables | Not specified | Three black rules, no grid, zebra rows, key cells red bold |
+| Section navigation | Dark section dividers / breadcrumb bar | "Content" agenda slide, current section black, others gray |
+| Citations | 12–14 pt muted line | Full reference, 8 pt muted, bottom-left |
+| Font sizes | 26 pt title / 20 pt body | 22 pt title / 15 pt body on a 10 in canvas (= 20 pt on 13.33 in) |
+| QA | markitdown + images | `check_takehome()` + `render.py` (PowerPoint COM or LibreOffice) |
+
+The content rules in `content_guidelines.md` are kept from upstream, with sizes and annotation colours adjusted to the house style.
+
+## File structure
+
+```
+academic-pptx/
+├── SKILL.md               # Entry point: workflow and summary
+├── content_guidelines.md  # Argument structure, action titles, take-home box, citations, deck architecture
+├── STYLE.md               # Complete visual specification and QA list
+├── slide_patterns.md      # python-pptx pattern per slide type
+├── pptx_style.py          # Helper library implementing STYLE.md
+├── render.py              # .pptx -> PNG per slide + contact sheets
+├── examples/build_demo.py # Builds a 10-slide demo deck with every helper
+└── Academic_Presentation_Best_Practices_...pdf  # Upstream general advice (its colour/font choices are superseded by STYLE.md)
+```
 
 ## Installation
 
-1. Download this repository as a zip file (click **Code → Download ZIP** above)
-2. In [claude.ai](https://claude.ai), go to **Customize → Skills**
-3. Upload the zip file
-4. Confirm the skill appears in your skills list and is toggled on
+Claude Code:
 
-> **Requirement:** Code execution and file creation must be enabled in **Settings → Capabilities**.
+```bash
+git clone https://github.com/pic-wang/academic-pptx-skill.git ~/.claude/skills/academic-pptx
+pip install python-pptx pillow matplotlib pywin32   # pywin32 only on Windows
+```
+
+claude.ai: download the repository as a zip and upload it under **Customize → Skills**.
 
 ## Usage
 
-Just ask naturally:
+Ask naturally, e.g. "make slides for my group meeting on X" or "build a conference deck from this paper". To check the setup:
 
-- *"Make slides for my conference paper on X"*
-- *"Build a deck for my thesis defense"*
-- *"Create a seminar presentation about my research on Y"*
-
-Claude will detect the academic context, load this skill automatically, and apply all guidelines before generating any slides. You do not need to give any special instructions.
-
-This skill works alongside Anthropic's built-in PPTX skill, which handles the technical file generation. This skill handles content, argument structure, and design standards.
-
-## File Structure
-
-```
-academic-pptx-skill/
-├── SKILL.md                  # Entry point: routing logic and design standards
-├── content_guidelines.md     # Argument structure, action titles, citations, deck architecture
-├── slide_patterns.md         # Per-slide-type implementation patterns with PptxGenJS code
-└── README.md                 # This file
+```bash
+python examples/build_demo.py examples/demo.pptx [--template template.pptx] [--logo logo.png]
+python render.py examples/demo.pptx examples/demo_render
 ```
 
-## Background
-
-The guidelines in this skill draw on:
-- Barbara Minto's *Pyramid Principle* (structured argument, action titles)
-- Naegle (2021), "Ten simple rules for effective presentation slides," *PLOS Computational Biology*
-- Standard consulting and academic presentation practice (McKinsey, conference norms)
-- Community feedback on Claude's default presentation behaviour in professional contexts
+Institution templates and logos are not stored in this repository. Pass them with `--template` / `--logo`, or `new_presentation(template=...)` / `logo=...` in code.
 
 ## License
 
-MIT — free to use, adapt, and share.
+MIT, as upstream.

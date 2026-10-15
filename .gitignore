@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+examples/demo.pptx
+examples/_demo_fig.png
+examples/demo_render/
+assets/

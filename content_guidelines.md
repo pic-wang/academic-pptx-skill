@@ -1,5 +1,7 @@
 # Academic Presentation Content Guidelines
 
+This file governs what goes on the slides. How it looks is defined in [STYLE.md](STYLE.md); font sizes quoted here refer to the 10 × 5.625 in canvas used by this skill.
+
 ## 1. Argument Structure
 
 ### Lead with the research question
@@ -45,9 +47,19 @@ The most important formatting rule. Every content slide title must be a complete
 
 **Ghost deck test:** Read only the action titles in sequence. They should tell the complete argument. If they don't, the deck's logic needs repair — fix the titles and/or restructure before building.
 
-**Title length:** One to two lines. If more is needed, the point is not sharp enough yet.
+**Title length:** One line, about 52 characters at 22 pt. If more is needed, the point is not sharp enough yet; move the supporting number into the take-home box.
 
-**Title font:** 24–28 pt, bold. Action titles must be immediately readable, including from the back of the room.
+**Title font:** 22 pt Cambria bold black (STYLE.md). Action titles must be immediately readable, including from the back of the room.
+
+### Take-home box
+Every content slide ends with a red dashed take-home box (STYLE.md §4). It holds one sentence: the slide's conclusion with its supporting number, key phrase in red bold.
+
+| Page title | Take-home box |
+|------------|---------------|
+| Error falls 35% below baseline with more data | More data keeps helping: **no saturation** up to 3,500 cases. |
+| CFD is too slow for iterative early-stage design | A **faster assessment tool** is needed during early-stage design. |
+
+Run the ghost deck test twice: once on the titles, once on the take-home sentences.
 
 ---
 
@@ -64,7 +76,7 @@ Do not make the audience search. Mark the key data point, bar, line, or cell wit
 - A call-out arrow or label
 - A highlighted/shaded region
 - A text annotation box ("↑ 23% above baseline")
-- A different colour for the focal series
+- Red `C00000` for the focal series or point; gray `6B6B6B` for baselines
 
 This is especially important for large rooms where the screen may be far away.
 
@@ -78,7 +90,7 @@ Place figures on the **left side** of the slide. Interpretive bullets or discuss
 Tables require more cognitive load to parse quickly under time pressure. Use a graph when showing a trend, comparison, or distribution. Reserve tables for precise numerical comparisons where the exact values matter.
 
 ### Rebuild figures from your paper
-Do not copy figures directly from a PDF. Paper figures are typically too small, use print-resolution fonts, and have captions that will not render well on screen. Rebuild them at presentation resolution with larger fonts (≥ 16 pt for axis labels).
+Do not copy figures directly from a PDF. Paper figures are typically too small, use print-resolution fonts, and have captions that will not render well on screen. Rebuild them at presentation resolution with the user's matplotlib styling block (15 pt labels, see CLAUDE.md).
 
 ### Don't include exhibits you won't discuss
 If you include it, discuss it. If you won't have time to discuss it, move it to the appendix.
@@ -98,18 +110,18 @@ Omit articles and filler phrases where meaning is preserved.
 - Instead of: "Our study found that the intervention reduced costs significantly."
 - Use: "Intervention reduced costs by 23% (p < 0.01)"
 
-### Body font: 20 pt minimum
-This is a floor, not a target. If text must be smaller than 20 pt to fit on the slide, remove content until it fits at 20 pt.
+### Body font: 15 pt minimum
+15 pt on the 10 in canvas equals 20 pt on a 13.33 in canvas. This is a floor, not a target; side panels next to a figure may use 13 pt. If text must be smaller to fit, remove content until it fits.
 
-### Use bold and italics sparingly
-Bold for key terms on first introduction, for inline labels ("Note:", "Limitation:"), and for the focal finding. Italics for statistical notation, species names, book titles. Not for decoration.
+### Use red and bold sparingly
+Mark the two to five words that carry each point in red (`*text*`) or red bold (`**text**`). Inline labels ("Objective:", "Input:", "Output:") are red bold. Italics for statistical notation and symbols. Do not colour whole sentences red outside the take-home box.
 
 ---
 
 ## 5. Citations and Attribution
 
 ### Cite on the slide
-Every claim, figure, or dataset that is not your own original work must be cited on the slide where it appears. Place the citation at the bottom of the slide in a smaller muted font (12–14 pt).
+Every claim, figure, or dataset that is not your own original work must be cited on the slide where it appears. Place the full reference (authors, title, venue, year, DOI) at the bottom-left of the slide in 8 pt muted text (`add_citation`). A short form "(Author et al., Year)" may also sit beside the figure.
 
 Use your field's standard format:
 - Sciences / social sciences: (Author, Year) parenthetical
@@ -120,7 +132,7 @@ Use your field's standard format:
 Introduce sources verbally before the citation appears: "Smith and colleagues found in 2022 that…" — don't silently flash a parenthetical.
 
 ### Figures from published sources
-- Attribution caption directly beneath the figure (e.g., "Source: Jones et al., 2021, Fig. 3")
+- Short attribution directly beneath the figure (e.g., "(Jones et al., 2021)"), full reference at the slide bottom
 - Full reference on the References slide
 - Note: reproducing a figure from a published paper may require publisher permission. For conference presentation, this is typically covered by fair use; check if in doubt.
 
@@ -138,6 +150,10 @@ Required slides for a complete academic presentation, in order:
 - Author name(s) and affiliations
 - Conference / venue / event name
 - Date
+
+### Agenda ("Content") slide
+- Lists the deck's sections; current section black, others gray (STYLE.md §4)
+- Insert after the title slide and again before each major section
 
 ### Motivation / Context (1–2 slides)
 - Why does this problem matter?
@@ -165,7 +181,8 @@ Required slides for a complete academic presentation, in order:
 - Address the main limitation(s) directly — pre-empt the audience's objection
 
 ### Conclusions (1 slide)
-- 2–4 bullet points restating the key takeaways
+- One lead sentence ("We introduced X for Y"), then 2–4 bullets restating the key takeaways with their numbers, key phrases in red
+- Take-home box with the single main claim
 - **This slide stays on screen during Q&A. It is the last slide the audience sees.**
 - Do NOT follow it with "Thank You" or a blank slide
 
@@ -220,7 +237,7 @@ When you say "I'll stop there," the conclusions slide should already be on scree
 - Use plain, direct sentence structures
 
 ### Accessibility basics
-- Minimum 20 pt body text; 24 pt+ titles
+- Minimum 15 pt body text and 22 pt titles on the 10 in canvas
 - High contrast between text and background (dark text on white, or white on dark)
 - Do not rely on colour alone to convey meaning (use labels, patterns, or shapes as well)
 - Provide alt text on figures if the slides will be circulated as a PDF
@@ -236,8 +253,9 @@ When you say "I'll stop there," the conclusions slide should already be on scree
 | Reading the slides aloud | Slides carry evidence; the presenter carries the argument |
 | Evidence without a "so what" | Annotate the key finding directly on the chart |
 | Uncited borrowed figures | Cite on the slide; full reference on References slide |
-| Body text < 20 pt | Remove content until it fits at 20 pt |
-| Inconsistent formatting | One font, one citation style, consistent grid alignment |
+| Body text < 15 pt | Remove content until it fits at 15 pt |
+| Content slide without take-home box | Add one sentence stating the slide's conclusion |
+| Inconsistent formatting | Use the `pptx_style.py` helpers; never set fonts or colours by hand |
 | Slides you won't discuss | Move to appendix if you won't have time |
 | Going over time | Rehearse under time; know what to cut |
 | Ending on "Thank You" | End on conclusions slide; it stays up during Q&A |

@@ -1,0 +1,113 @@
+# House Visual Style
+
+This file defines every visual rule for decks built with this skill. It was derived from three reference decks (a conference talk, a group-meeting report, and an invited talk) and replaces the upstream skill's navy/Arial design standards.
+
+`pptx_style.py` implements every rule below. Build slides by calling its helpers; do not set fonts, colours, or borders by hand.
+
+Reproducibility takes priority over creativity. Do not invent alternate palettes, add decorative lines, or switch fonts.
+
+---
+
+## 1. Canvas and font
+
+| Item | Value |
+|------|-------|
+| Canvas | 10 × 5.625 in (16:9). Base on `template.pptx` when one is provided. |
+| Font | **Cambria** for every run, including East-Asian (`a:ea`) and complex-script (`a:cs`) runs. |
+| Background | White on every slide, including the title and conclusions slides. |
+
+The reference decks were authored on a 13.33 × 7.5 in canvas. All sizes here are the reference sizes × 0.75, so a deck built here and scaled to 13.33 in matches the references (22 pt title ≈ 28–32 pt, 15 pt body = 20 pt).
+
+## 2. Palette
+
+| Token | Hex | Use |
+|-------|-----|-----|
+| Text | `1A1A1A` | Body text |
+| Black | `000000` | Page titles, table header text, table rules |
+| Red accent | `C00000` | Section headers, key phrases, key table cells, take-home border, concept-box borders |
+| Gray | `F2F2F2` | Zebra stripe on table data rows |
+| Muted | `6B6B6B` | Citations, venue line |
+| Agenda inactive | `BFBFBF` | Non-current sections on the agenda slide |
+
+No blue, no green, no orange in slide chrome. Figures follow the same rule where you control them: red `C00000` for the focal series, gray `6B6B6B` for baselines.
+
+## 3. Type scale (10 in canvas)
+
+| Element | Size | Weight | Colour | Position |
+|---------|------|--------|--------|----------|
+| Page title | 22 pt | Bold | Black | Top-left `(0.5, 0.38)`, single line (≤ ~52 characters) |
+| Section header | 16 pt | Bold | Red, with red `•` bullet | `(0.5, 1.05)`; further headers below the body they introduce |
+| Body | 15 pt (13 pt minimum for dense side panels) | Regular | Text; key phrases red | Indented 0.22 in under the section header, black `•` bullets |
+| Take-home box | 15 pt | Regular; key phrase red bold | — | Bottom, centred, `y ≈ 4.72` |
+| Table cells | 13 pt | Header bold | Black / Text; key cells red bold | — |
+| Caption | 12 pt | `Fig. N.` / `Tab. N.` bold, rest regular | Text | Directly beneath the exhibit, single line |
+| Citation | 8 pt | Regular | Muted | Bottom-left `(0.1, 5.30)`, full reference |
+| Page number | 10 pt | Regular | Text | Bottom-right |
+| Agenda items | 18 pt | Bold | Black (current) / `BFBFBF` (others) | Line spacing 200 % |
+| Deck title | 22 pt | Bold | Black; key phrase red | Centred |
+
+## 4. Slide elements
+
+### Page title
+Black bold Cambria, top-left, one line. No accent line or rule under it.
+
+### Section header
+Red `•` bullet (`<a:buChar char="•"/>` inside `<a:pPr>`, `buClr` red) followed by red bold text, usually ending in a colon in the reference decks ("Benchmark:", "Conditional modulation:"). Body text follows on the next lines, indented.
+
+### Key phrases
+Inside body text, mark the two to five words that carry the point in red (`*text*`) or red bold (`**text**`). Do not colour whole sentences red except inside the take-home box when the sentence itself is the key phrase.
+
+### Take-home box (mandatory on every content slide)
+- Text box with `<a:ln w="19050">` (1.5 pt), solid fill `C00000` on the line, `<a:prstDash val="dash"/>`, no shape fill.
+- One sentence, centred, at the bottom of the slide.
+- The key phrase inside is a red bold run; the rest is regular text colour.
+- Exempt slides: title, agenda, references, appendix divider.
+
+### Tables: three-line academic style
+- Black top rule, black rule under the header row, black bottom rule. No internal grid, no vertical lines.
+- Header row: bold, no fill.
+- Data rows: zebra stripes, first data row `F2F2F2`, then white, alternating.
+- Column 0 left-aligned; columns 1..n centred.
+- Key-number cells red bold.
+- Never keep a `tableStyleId`; `add_table` removes it.
+- OOXML order: in `<a:tcPr>`, `lnL`, `lnR`, `lnT`, `lnB` must come **before** `<a:solidFill>`. Otherwise PowerPoint ignores the borders and draws the default grid. `_apply_three_line_borders` writes them in this order.
+
+### Figures and captions
+- Figure on the left, interpretation (section header + 2–3 bullets) on the right, when a slide has one exhibit plus commentary.
+- Caption under the figure: `Fig. N.` bold + one regular sentence. Must fit on one line; shorten it if it wraps.
+- Short descriptive labels under a row of images (e.g. "Pedestrian level comfort", "(Lyu et al., 2025)") are 12 pt, centred under each image.
+- Annotate the focal point inside the figure in red (`C00000`): arrow, circle, or a label such as `RL2E: 0.12`.
+
+### Concept boxes
+A row of two to four rounded rectangles with a 1.5 pt red border and no fill. Bold centred header, then two or three short bullets. Use them for objective/property summaries (e.g. Applicability · Flexibility · Accuracy).
+
+### Agenda ("Content") slide
+Page title "Content". List of the deck's sections; the current section is black bold with a filled `•`, the others are `BFBFBF` bold with a hollow `o` (Courier New) bullet. Insert it before each major section. This replaces the upstream breadcrumb bar and dark section dividers.
+
+### Title slide
+White background. Deck title centred, bold, black, with the key phrase in red. Author list centred below (corresponding author marked `*`). Presenter block bottom-right: a red vertical bar before "**Presenter:** Name" and before the bold affiliation line. Institution logo top-right if available. No dark background, no accent rule.
+
+### Citations
+Full reference (authors, title, venue, year, DOI) in 8 pt muted text at the bottom-left of the slide where the source is used. Short in-text form "(Author et al., Year)" may also appear beside the figure.
+
+## 5. Never
+
+- Accent lines under page titles.
+- Filled or coloured table header rows.
+- Red table rules (red is for text and box accents only).
+- Centre-aligned body paragraphs (take-home box, captions, and the deck title are the only centred text).
+- Emojis, icons in coloured circles, clip art, stock decoration.
+- Dark backgrounds on any slide.
+- A content slide without a take-home box.
+- Fonts other than Cambria in slide text.
+
+## 6. Visual QA (required before reporting done)
+
+Render the deck (`python render.py deck.pptx out_dir`: PowerPoint COM on Windows, LibreOffice + `pdftoppm` elsewhere) and inspect every slide image for:
+
+- red dashed take-home box present on each content slide (`check_takehome()` also checks this);
+- black three-line tables, no internal grid, zebra stripes;
+- red bullets on section headers;
+- page titles and captions on one line;
+- no element overlap and nothing outside the slide;
+- no text below 13 pt except citations and page numbers.
